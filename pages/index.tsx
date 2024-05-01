@@ -1,12 +1,14 @@
 import Head from 'next/head';
 import { useState } from 'react';
+import { ResponseData } from '../services/data.interface';
 import styles from '../styles/Home.module.css';
-import { ResponseData } from './api/[[...data]]';
 
 export default function Home() {
+
   const [month, setMonth] = useState<string>();
   const [year, setYear] = useState<string>();
   const [result, setResult] = useState<ResponseData>();
+
   const getMonthData = async () => {
     const res = await fetch(`api/data/${year}/${month}`);
     const data = await res.json();
@@ -18,21 +20,24 @@ export default function Home() {
         <title>Checkmarx home assignment</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
-        Select Month
+      <div className={styles.form}>
+        <h2>
+          Select Month
+        </h2>
+        <input
+          type='month'
+          className={styles['date-input']}
+          onChange={(ev) => {
+            setMonth(ev.target.value.split('-')[1]);
+            setYear(ev.target.value.split('-')[0]);
+          }}
+        />
+        <button className={styles['get-data-button']} disabled={!month} onClick={getMonthData}>Get Data</button>
       </div>
-      <input
-        type='month'
-        onChange={(ev) => {
-          setMonth(ev.target.value.split('-')[1]);
-          setYear(ev.target.value.split('-')[0]);
-        }}
-      />
-      <button disabled={!month} onClick={getMonthData}>Get Data</button>
       {
         result &&
-        <div>
-          {result.year}-{result.month} : Expected Revenue: {result.revenue}$ expected total capacity of the unreserved
+        <div className={styles.result}>
+          {result.date} : Expected Revenue: ${result.revenue.toLocaleString()}. Expected total capacity of the unreserved
           offices: {result.unreserved}
         </div>
       }
